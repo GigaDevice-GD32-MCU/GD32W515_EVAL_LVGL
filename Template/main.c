@@ -32,7 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "gd32w51x.h"
+#include "gd32w51x_f5hc.h"
 #include "systick.h"
 #include <stdio.h>
 #include "main.h"
@@ -41,16 +41,14 @@ OF SUCH DAMAGE.
 
 
 #include "lvgl.h"
-#include "lv_port_indev.h"
 #include "lv_port_disp.h"
 #include "lv_widgets_slideshow.h"
-
 #include "lv_demos.h"
 
 
 
 /*!
-    \brief      toggle the led every 500ms
+    \brief      
     \param[in]  none
     \param[out] none
     \retval     none
@@ -63,16 +61,11 @@ int main(void)
     /* GUI Tack */
     lv_init();
     lv_port_disp_init();
-//    lv_port_indev_init();
-
-//    lv_obj_t * screen = lv_screen_active();
-//    lv_obj_set_style_bg_color(screen, lv_color_hex(0xFF0000), LV_PART_MAIN);
-//    lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, LV_PART_MAIN);
 
     lv_demo_widgets();
     lv_demo_widgets_start_slideshow();
    
-//    lv_demo_benchmark();
+
     while(1){
         lv_timer_handler_run_in_period(5);
     }
