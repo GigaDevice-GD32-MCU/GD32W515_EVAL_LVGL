@@ -9,43 +9,36 @@
 
 #define MY_DISP_HOR_RES XSIZE_PHYS
 #define MY_DISP_VER_RES YSIZE_PHYS
-#define LV_BUF_LINES 120
 
 #define LV_BUF_TYPE 2
 
 #if LV_BUF_TYPE == 1
-__attribute__((aligned(8))) static lv_color_t buf_2[MY_DISP_HOR_RES * LV_BUF_LINES];
+__attribute__((aligned(8))) uint16_t buf_2[320 * 120];
 #elif LV_BUF_TYPE == 2
-__attribute__((aligned(8))) static lv_color_t buf_2[MY_DISP_HOR_RES * LV_BUF_LINES];
-__attribute__((aligned(8))) static lv_color_t buf_3[MY_DISP_HOR_RES * LV_BUF_LINES];
+__attribute__((aligned(8))) uint16_t buf_2[320 * 120];
+__attribute__((aligned(8))) uint16_t buf_3[320 * 120];
 #endif
 
-static lv_disp_drv_t * volatile g_disp_drv = NULL;
+lv_display_t * volatile g_disp_drv = NULL;
 
 static void disp_init(void);
-static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p);
+static void disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map);
 
 void lv_port_disp_init(void)
 {
-    static lv_disp_draw_buf_t draw_buf;
-    static lv_disp_drv_t disp_drv;
+    lv_display_t *disp;
 
     disp_init();
 
-    lv_disp_draw_buf_init(&draw_buf, buf_2,
-#if LV_BUF_TYPE == 2
-                          buf_3,
-#else
-                          NULL,
-#endif
-                          MY_DISP_HOR_RES * LV_BUF_LINES);
+    disp = lv_display_create(MY_DISP_HOR_RES, MY_DISP_VER_RES);
+    lv_display_set_color_format(disp, LV_COLOR_FORMAT_RGB565);
+    lv_display_set_flush_cb(disp, disp_flush);
 
-    lv_disp_drv_init(&disp_drv);
-    disp_drv.hor_res = MY_DISP_HOR_RES;
-    disp_drv.ver_res = MY_DISP_VER_RES;
-    disp_drv.flush_cb = disp_flush;
-    disp_drv.draw_buf = &draw_buf;
-    lv_disp_drv_register(&disp_drv);
+#if LV_BUF_TYPE == 1
+    lv_display_set_buffers(disp, buf_2, NULL, sizeof(buf_2), LV_DISPLAY_RENDER_MODE_PARTIAL);
+#elif LV_BUF_TYPE == 2
+    lv_display_set_buffers(disp, buf_2, buf_3, sizeof(buf_2), LV_DISPLAY_RENDER_MODE_PARTIAL);
+#endif
 }
 
 static void disp_init(void)
@@ -65,8 +58,10 @@ void disp_disable_update(void)
     disp_flush_enabled = false;
 }
 
-static void lv_port_lcd_copy(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *src_data)
+void lcd_copy(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *src_data)
 {
+    uint16_t *data = src_data;
+
 #if USE_DMA_LCD == 1
     dma_channel_disable(DMA0, DMA_CH3);
     dma_channel_disable(DMA0, DMA_CH4);
@@ -90,7 +85,6 @@ static void lv_port_lcd_copy(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uin
 #else
     uint16_t row;
     uint16_t column;
-    uint16_t *data = src_data;
 
     lcd_set_region(x, y, x + w - 1, y + h - 1);
     LCD_RS_SET;
@@ -106,27 +100,18 @@ static void lv_port_lcd_copy(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uin
 #endif
 }
 
-static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
+static void disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
 {
     if(disp_flush_enabled) {
 #if USE_DMA_LCD == 1
         while(g_disp_drv != NULL) {
         }
-        g_disp_drv = disp_drv;
-        lv_port_lcd_copy((uint16_t)area->x1, (uint16_t)area->y1,
-                 (uint16_t)(area->x2 - area->x1 + 1),
-                 (uint16_t)(area->y2 - area->y1 + 1),
-                 (uint16_t *)color_p);
+        g_disp_drv = disp;
+        lcd_copy(area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1, (uint16_t *)px_map);
 #else
-        lv_port_lcd_copy((uint16_t)area->x1, (uint16_t)area->y1,
-                 (uint16_t)(area->x2 - area->x1 + 1),
-                 (uint16_t)(area->y2 - area->y1 + 1),
-                 (uint16_t *)color_p);
-        lv_disp_flush_ready(disp_drv);
+        lcd_copy(area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1, (uint16_t *)px_map);
+        lv_display_flush_ready(disp);
 #endif
-    }
-    else {
-        lv_disp_flush_ready(disp_drv);
     }
 }
 
@@ -146,7 +131,7 @@ void DMA0_Channel4_IRQHandler(void)
             while(SET == spi_i2s_flag_get(SPI1, SPI_FLAG_TRANS)) {
             }
             LCD_CS_SET;
-            lv_disp_flush_ready((lv_disp_drv_t *)g_disp_drv);
+            lv_display_flush_ready((lv_display_t *)g_disp_drv);
             g_disp_drv = NULL;
         }
     }
