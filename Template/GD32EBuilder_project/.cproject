@@ -2,7 +2,7 @@
 <?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="com.gigadevice.mbs.arm.configuration.release.gd32w515">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.gigadevice.mbs.arm.configuration.release.gd32w515" moduleId="org.eclipse.cdt.core.settings" name="GD32W515_EVAL">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.gigadevice.mbs.arm.configuration.release.gd32w515" moduleId="org.eclipse.cdt.core.settings" name="gd32w515_eval">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -14,7 +14,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}.elf" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="${command_rm} -rf" description="" id="com.gigadevice.mbs.arm.configuration.release.gd32w515" name="GD32W515_EVAL" postbuildStep="arm-none-eabi-objcopy -O binary &quot;${ProjName}.elf&quot; &quot;${ProjName}.bin&quot;; arm-none-eabi-objcopy -O ihex &quot;${ProjName}.elf&quot; &quot;${ProjName}.hex&quot;; arm-none-eabi-size &quot;${ProjName}.elf&quot;" prebuildStep="">
+				<configuration artifactName="${ProjName}.elf" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="${command_rm} -rf" description="" id="com.gigadevice.mbs.arm.configuration.release.gd32w515" name="gd32w515_eval" postbuildStep="arm-none-eabi-objcopy -O binary &quot;${ProjName}.elf&quot; &quot;${ProjName}.bin&quot;; arm-none-eabi-objcopy -O ihex &quot;${ProjName}.elf&quot; &quot;${ProjName}.hex&quot;; arm-none-eabi-size &quot;${ProjName}.elf&quot;" prebuildStep="">
 					<folderInfo id="com.gigadevice.mbs.arm.configuration.release.gd32w515." name="/" resourcePath="">
 						<toolChain id="com.gigadevice.mbs.arm.toolChain.elf.release.gd32w515" name="GD ARM MCU Toolchain" secondaryOutputs="com.gigadevice.mbs.arm.outputType.objcopy.bin;com.gigadevice.mbs.arm.outputType.size;com.gigadevice.mbs.arm.outputType.objcopy.hex;com.gigadevice.mbs.arm.outputType.objdump.list" superClass="com.gigadevice.mbs.arm.toolChain.elf.release">
 							<option id="gd32w515.release.cpu" name="All options" superClass="com.gigadevice.mbs.arm.option.targetProcessor.allOptions" value="-mcpu=cortex-m33 -mthumb -mfloat-abi=hard -mfpu=fpv5-sp-d16" valueType="string"/>
@@ -41,8 +41,6 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../Firmware/CMSIS/GD/GD32W51x_F5HC/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../Firmware/GD32W51x_F5HC_standard_peripheral/Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/..&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../GUI_APP&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../GUI_APP/ui_lvgl&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../GUI_APP/ui_lvgl/demos&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../Utilities/bsp_drive&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../Utilities/lvgl/lvgl&quot;"/>
@@ -53,13 +51,17 @@
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 									<listOptionValue builtIn="false" value="SYS_NS"/>
 									<listOptionValue builtIn="false" value="GD32W515"/>
+									<listOptionValue builtIn="false" value="GD32W515PI"/>
 									<listOptionValue builtIn="false" value="LV_LVGL_H_INCLUDE_SIMPLE"/>
 									<listOptionValue builtIn="false" value="LV_CONF_INCLUDE_SIMPLE"/>
+									<listOptionValue builtIn="false" value="LV_DEMO_CONF_INCLUDE_SIMPLE"/>
 								</option>
 								<option id="gd32w515.release.std" name="C Standard" superClass="com.gigadevice.mbs.arm.option.CCompiler.general.std" value="com.gigadevice.mbs.option.toolSettings.CCompiler.std.gnu11" valueType="enumerated"/>
 								<inputType id="gd32w515.release.cinput" superClass="com.gigadevice.mbs.arm.inputType.CCompiler"/>
 							</tool>
 							<tool id="gd32w515.release.linker" name="GD ARM MCU Linker" superClass="com.gigadevice.mbs.arm.tool.linker">
+								<option id="gd32w515.release.nano" name="Use newlib-nano (--specs=nano.specs)" superClass="com.gigadevice.mbs.arm.option.linker.misc.usenewlibnano" value="false" valueType="boolean"/>
+								<option id="gd32w515.release.nosys" name="Don't use syscalls (--specs=nosys.specs)" superClass="com.gigadevice.mbs.arm.option.linker.misc.usenewlibnosys" value="true" valueType="boolean"/>
 								<option id="gd32w515.release.gc" name="Remove unused sections (-Xlinker --gc-sections)" superClass="com.gigadevice.mbs.arm.option.linker.general.gcsections" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gd32w515.release.script" name="Linker script (-T)" superClass="com.gigadevice.mbs.arm.option.linker.general.scriptFile" valueType="stringList">
 									<listOptionValue builtIn="false" value="${ProjDirPath}/../../Firmware/CMSIS/GD/GD32W51x_F5HC/Source/GCC/Ld/gd32w515xI_flash.ld"/>
@@ -72,6 +74,7 @@
 							<tool id="gd32w515.release.assembler" name="GD ARM MCU Assembler" superClass="com.gigadevice.mbs.arm.tool.assembler">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gd32w515.release.asmdefs" name="Define (-D)" superClass="com.gigadevice.mbs.arm.option.assembler.symbols.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="SYS_NS"/>
+									<listOptionValue builtIn="false" value="GD32W515PI"/>
 								</option>
 								<inputType id="gd32w515.release.asminput" superClass="com.gigadevice.mbs.arm.inputType.assembler"/>
 							</tool>

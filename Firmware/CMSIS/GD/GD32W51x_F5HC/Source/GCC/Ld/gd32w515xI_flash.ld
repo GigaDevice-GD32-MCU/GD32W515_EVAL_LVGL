@@ -36,8 +36,8 @@ ENTRY(Reset_Handler)
 
 SECTIONS
 {
-  __stack_size = DEFINED(__stack_size) ? __stack_size : 2K;
-  __heap_size = DEFINED(__heap_size) ? __heap_size : 1K;
+  __stack_size = DEFINED(__stack_size) ? __stack_size : 8K;
+  __heap_size = DEFINED(__heap_size) ? __heap_size : 4K;
 
   /* ISR vectors */
   .vectors :

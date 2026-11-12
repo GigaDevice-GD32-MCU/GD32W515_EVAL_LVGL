@@ -33,8 +33,20 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32w51x_f5hc_it.h"
+#include "main.h"
 #include "systick.h"
 #include "lvgl.h"
+
+volatile uint32_t hardfault_pc;
+volatile uint32_t hardfault_lr;
+volatile uint32_t hardfault_r0;
+volatile uint32_t hardfault_r1;
+volatile uint32_t hardfault_r2;
+volatile uint32_t hardfault_r3;
+volatile uint32_t hardfault_cfsr;
+volatile uint32_t hardfault_hfsr;
+volatile uint32_t hardfault_mmfar;
+volatile uint32_t hardfault_bfar;
 
 /*!
     \brief      this function handles NMI exception
@@ -55,11 +67,32 @@ void NMI_Handler(void)
     \param[out] none
     \retval     none
 */
-void HardFault_Handler(void)
+__attribute__((used, noinline)) void HardFault_HandlerC(uint32_t *stack_frame)
 {
-    /* if Hard Fault exception occurs, go to infinite loop */
-    while(1) {
+    hardfault_r0 = stack_frame[0];
+    hardfault_r1 = stack_frame[1];
+    hardfault_r2 = stack_frame[2];
+    hardfault_r3 = stack_frame[3];
+    hardfault_lr = stack_frame[5];
+    hardfault_pc = stack_frame[6];
+    hardfault_cfsr = SCB->CFSR;
+    hardfault_hfsr = SCB->HFSR;
+    hardfault_mmfar = SCB->MMFAR;
+    hardfault_bfar = SCB->BFAR;
+
+    while(1){
     }
+}
+
+__attribute__((naked)) void HardFault_Handler(void)
+{
+    __asm volatile(
+        "tst lr, #4\n"
+        "ite eq\n"
+        "mrseq r0, msp\n"
+        "mrsne r0, psp\n"
+        "b HardFault_HandlerC\n"
+    );
 }
 
 /*!
@@ -71,7 +104,7 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
     /* if Memory Manage exception occurs, go to infinite loop */
-    while(1) {
+    while(1){
     }
 }
 
@@ -84,7 +117,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
     /* if Bus Fault exception occurs, go to infinite loop */
-    while(1) {
+    while(1){
     }
 }
 
@@ -97,7 +130,7 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
     /* if Usage Fault exception occurs, go to infinite loop */
-    while(1) {
+    while(1){
     }
 }
 
@@ -160,8 +193,8 @@ void FPU_IRQHandler(void)
     \retval     none
 */
 void SysTick_Handler(void)
-{   
-    lv_tick_inc(1U);
+{
+    //led_spark();
+    lv_tick_inc(1);
     delay_decrement();
- 
 }
